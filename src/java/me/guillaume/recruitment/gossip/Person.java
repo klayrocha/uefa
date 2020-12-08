@@ -8,6 +8,8 @@ public class Person {
 	private String newMessage;
 	private boolean hasAlreadyAGossip;
 	private int delayedOneTurnByAProfessor;
+	private boolean comingAMister;
+	private boolean comingADoctor;
 
 	public Person(String title, String name, String message) {
 		this.title = title;
@@ -53,6 +55,22 @@ public class Person {
 
 	public void setDelayedOneTurnByAProfessor(int delayedOneTurnByAProfessor) {
 		this.delayedOneTurnByAProfessor = delayedOneTurnByAProfessor;
+	}
+
+	public boolean isComingAMister() {
+		return comingAMister;
+	}
+
+	public void setComingAMister(boolean comingAMister) {
+		this.comingAMister = comingAMister;
+	}
+
+	public boolean isComingADoctor() {
+		return comingADoctor;
+	}
+
+	public void setComingADoctor(boolean comingADoctor) {
+		this.comingADoctor = comingADoctor;
 	}
 
 }
