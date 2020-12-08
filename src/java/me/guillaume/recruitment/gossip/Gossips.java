@@ -2,7 +2,6 @@ package me.guillaume.recruitment.gossip;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Gossips {
 
@@ -14,8 +13,9 @@ public class Gossips {
 
 	public Gossips(String... newPersons) {
 		for (int i = 0; i < newPersons.length; i++) {
-			// I'm sure there are always two words with space between, if not, needs to treatment it
-			persons.add(new Person(newPersons[i].split(" ")[1], ""));
+			// I'm sure there are always two words with space between, if not, needs to
+			// treatment it
+			persons.add(new Person(newPersons[i].split(" ")[0], newPersons[i].split(" ")[1], ""));
 		}
 	}
 
@@ -54,45 +54,42 @@ public class Gossips {
 
 	public void spread() {
 		clearHasAlreadyAGossip();
-		List<Person> personsWithMessage = persons.stream().filter(p -> !p.getMessage().equals(""))
-				.collect(Collectors.toList());
+		for (Connection connection : connections) {
+			Person from = persons.stream().filter(p -> p.getName().equals(connection.getFrom())).findAny().get();
+			Person to = persons.stream().filter(p -> p.getName().equals(connection.getTo())).findAny().get();
 
-		for (Person person : personsWithMessage) {
-			String message = person.getMessage();
-			String to = getToOfFromConnection(person.getName());
-			if (!to.equals("")) {
-				boolean canClean = false;
+			if (!from.getMessage().equals("")) {
+				if (!to.isHasAlreadyAGossip()) {
+					if (to.getTitle().equals("Dr") && !to.getMessage().equals("")) {
+						to.setNewMessage(to.getMessage() + ", " + from.getMessage());
+						from.setNewMessage("");
+					} else {
+						if (from.getMessage().contains(",")) {
+							to.setNewMessage(from.getMessage().split(",")[1].trim());
+						} else {
+							to.setNewMessage(from.getMessage());
+						}
 
-				for (Person p : persons) {
-					if (p.getName().equals(to) && !p.isHasAlreadyAGossip()) {
-						canClean = true;
-						p.setMessage(message);
-						p.setHasAlreadyAGossip(true);
 					}
-				}
-				// Clean from
-				for (Person p : persons) {
-					if (p.getName().equals(person.getName()) && canClean) {
-						p.setMessage("");
+					if (!from.isHasAlreadyAGossip() && !from.getTitle().equals("Dr")) {
+						from.setNewMessage("");
 					}
+					to.setHasAlreadyAGossip(true);
+
 				}
 			}
-
 		}
+		for (Person p : persons) {
+			if (p.getNewMessage() != null) {
+				p.setMessage(p.getNewMessage());
+			}
+		}
+
 	}
 
 	private void clearHasAlreadyAGossip() {
 		for (Person p : persons) {
 			p.setHasAlreadyAGossip(false);
 		}
-	}
-
-	private String getToOfFromConnection(String from) {
-		for (Connection c : connections) {
-			if (c.getFrom().equals(from)) {
-				return c.getTo();
-			}
-		}
-		return "";
 	}
 }
