@@ -7,6 +7,7 @@ public class Person {
 	private String message;
 	private String newMessage;
 	private boolean hasAlreadyAGossip;
+	private int delayedOneTurnByAProfessor;
 
 	public Person(String title, String name, String message) {
 		this.title = title;
@@ -44,6 +45,14 @@ public class Person {
 
 	public void setHasAlreadyAGossip(boolean hasAlreadyAGossip) {
 		this.hasAlreadyAGossip = hasAlreadyAGossip;
+	}
+
+	public int getDelayedOneTurnByAProfessor() {
+		return delayedOneTurnByAProfessor;
+	}
+
+	public void setDelayedOneTurnByAProfessor(int delayedOneTurnByAProfessor) {
+		this.delayedOneTurnByAProfessor = delayedOneTurnByAProfessor;
 	}
 
 }

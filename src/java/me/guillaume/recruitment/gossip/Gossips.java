@@ -67,6 +67,9 @@ public class Gossips {
 					// 4 - alwaysBeListenedByAnAgent 5- beStoppedByAnAgent
 				} else if (to.getTitle().equals("Agent") || from.getTitle().equals("Agent")) {
 					alwaysBeListenedByAnAgent(from, to);
+					// 6 - beDelayedOneTurnByAProfessor 7 - beDelayedOneTurnByAProfessor
+				} else if (to.getTitle().equals("Pr") || from.getTitle().equals("Pr")) {
+					beDelayedOneTurnByAProfessor(from, to);
 				} else {
 					to.setNewMessage(from.getMessage());
 					if (!from.isHasAlreadyAGossip()) {
@@ -76,13 +79,32 @@ public class Gossips {
 				}
 			}
 		}
-
 		for (Person p : persons) {
 			if (p.getNewMessage() != null) {
 				p.setMessage(p.getNewMessage());
 			}
 		}
-
+	}
+	
+	private void beDelayedOneTurnByAProfessor(Person from, Person to) {
+		if(from.getTitle().equals("Pr") ) {
+			if(from.getDelayedOneTurnByAProfessor() > 0) {
+				to.setNewMessage(from.getMessage());
+				if (!from.isHasAlreadyAGossip()) {
+					from.setNewMessage("");
+				}
+				to.setHasAlreadyAGossip(true);
+				from.setDelayedOneTurnByAProfessor(0);
+			} else {
+				from.setDelayedOneTurnByAProfessor(1);
+			}
+		} else {
+			to.setNewMessage(from.getMessage());
+			if (!from.isHasAlreadyAGossip()) {
+				from.setNewMessage("");
+			}
+		}
+		to.setHasAlreadyAGossip(true);
 	}
 	
 	private void alwaysBeListenedByAnAgent(Person from, Person to) {
@@ -109,7 +131,6 @@ public class Gossips {
 			} else {
 				to.setNewMessage(from.getMessage());
 			}
-
 		}
 		if (!from.isHasAlreadyAGossip() && !from.getTitle().equals("Dr")) {
 			from.setNewMessage("");
