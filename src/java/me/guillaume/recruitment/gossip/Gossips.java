@@ -58,33 +58,63 @@ public class Gossips {
 			Person from = persons.stream().filter(p -> p.getName().equals(connection.getFrom())).findAny().get();
 			Person to = persons.stream().filter(p -> p.getName().equals(connection.getTo())).findAny().get();
 
-			if (!from.getMessage().equals("")) {
-				if (!to.isHasAlreadyAGossip()) {
-					if (to.getTitle().equals("Dr") && !to.getMessage().equals("")) {
-						to.setNewMessage(to.getMessage() + ", " + from.getMessage());
-						from.setNewMessage("");
-					} else {
-						if (from.getMessage().contains(",")) {
-							to.setNewMessage(from.getMessage().split(",")[1].trim());
-						} else {
-							to.setNewMessage(from.getMessage());
-						}
-
-					}
-					if (!from.isHasAlreadyAGossip() && !from.getTitle().equals("Dr")) {
+			// 1 - bePropagatedByAnyMister & 2 - beRetainedIfRecipientHasAlreadyAGossip
+			if (!from.getMessage().equals("") && !to.isHasAlreadyAGossip()) {
+				
+				// 3 - beRememberedByDoctors
+				if (to.getTitle().equals("Dr") || from.getTitle().equals("Dr")) {
+					beRememberedByDoctors(from, to);
+					// 4 - alwaysBeListenedByAnAgent 5- beStoppedByAnAgent
+				} else if (to.getTitle().equals("Agent") || from.getTitle().equals("Agent")) {
+					alwaysBeListenedByAnAgent(from, to);
+				} else {
+					to.setNewMessage(from.getMessage());
+					if (!from.isHasAlreadyAGossip()) {
 						from.setNewMessage("");
 					}
 					to.setHasAlreadyAGossip(true);
-
 				}
 			}
 		}
+
 		for (Person p : persons) {
 			if (p.getNewMessage() != null) {
 				p.setMessage(p.getNewMessage());
 			}
 		}
 
+	}
+	
+	private void alwaysBeListenedByAnAgent(Person from, Person to) {
+		if(to.getNewMessage() !=null && !to.getNewMessage().equals("")) {
+			to.setNewMessage(to.getNewMessage() + ", " + from.getMessage());
+		} else if(to.getMessage() != null && !to.getMessage().equals("")) {
+			to.setNewMessage(to.getMessage() + ", " + from.getMessage());
+		} else {
+			to.setNewMessage(from.getMessage());
+		}
+		from.setNewMessage("");
+		if(!to.getTitle().equals("Agent")) {
+			to.setNewMessage("");
+		}
+	}
+
+	private void beRememberedByDoctors(Person from, Person to) {
+		if (to.getTitle().equals("Dr") && !to.getMessage().equals("")) {
+			to.setNewMessage(to.getMessage() + ", " + from.getMessage());
+			from.setNewMessage("");
+		} else {
+			if (from.getMessage().contains(",")) {
+				to.setNewMessage(from.getMessage().split(",")[1].trim());
+			} else {
+				to.setNewMessage(from.getMessage());
+			}
+
+		}
+		if (!from.isHasAlreadyAGossip() && !from.getTitle().equals("Dr")) {
+			from.setNewMessage("");
+		}
+		to.setHasAlreadyAGossip(true);
 	}
 
 	private void clearHasAlreadyAGossip() {
